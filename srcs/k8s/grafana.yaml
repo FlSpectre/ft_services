@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    metallb.universe.tf/allow-shared-ip: ft_services
+  name: grafana
+  labels:
+    run: grafana
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 3000
+    targetPort: 3000
+    protocol: TCP
+    name: http
+  selector:
+    app: grafana
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - image: ft_grafana
+        imagePullPolicy: Never
+        name: grafana
+        env:
+        - name: GRAFANA_DB_HOST
+          value: mysql
+        - name: GRAFANA_DB_USER
+          value: root
+        - name: GRAFANA_DB_PASSWORD
+          value: admin
+        ports:
+          - containerPort: 3000
+            name: grafana

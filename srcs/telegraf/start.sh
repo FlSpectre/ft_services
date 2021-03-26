@@ -1,0 +1,2 @@
+echo "launch telegraf"
+telegraf
